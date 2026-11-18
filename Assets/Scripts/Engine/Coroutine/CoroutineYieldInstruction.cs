@@ -6,10 +6,10 @@
 namespace Engine.Coroutine
 {
     using System;
-    using UnityEngine;
 
     /// <summary>
-    /// A static class that provides yield instructions for coroutines.
+    /// UnrealSharp portability. Exposes the same coroutine waits to PAL3 on both engines.
+    /// Each host supplies its own backend so gameplay can keep the same yield calls.
     /// </summary>
     public static class CoroutineYieldInstruction
     {
@@ -20,7 +20,7 @@ namespace Engine.Coroutine
         /// <returns>A yield instruction that waits for the specified number of seconds.</returns>
         public static object WaitForSeconds(float seconds)
         {
-            return new WaitForSeconds(seconds);
+            return CoroutineWaitBackend.WaitForSeconds(seconds);
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace Engine.Coroutine
         /// <returns>A yield instruction that waits until the predicate returns true.</returns>
         public static object WaitUntil(Func<bool> predicate)
         {
-            return new WaitUntil(predicate);
+            return CoroutineWaitBackend.WaitUntil(predicate);
         }
     }
 }

@@ -5,30 +5,17 @@
 
 namespace Engine.Core.Implementation
 {
-    using System;
-    using System.Collections;
     using Abstraction;
     using UnityEngine;
 
-    public abstract class GameEntityScript : MonoBehaviour
+    // UnrealSharp portability. Keep gameplay hooks shared and let each
+    // engine resolve the entity associated with this behaviour.
+    public abstract partial class GameEntityScript : MonoBehaviour
     {
-        private ITransform _transform;
-        private IGameEntity _gameEntity;
+        public ITransform Transform => GameEntity.Transform;
+        public IGameEntity GameEntity => ResolveGameEntity();
 
-        public ITransform Transform
-        {
-            get { return _transform ??= new UnityTransform(base.transform); }
-        }
-
-        public IGameEntity GameEntity
-        {
-            get { return _gameEntity ??= new GameEntity(base.gameObject); }
-        }
-
-        protected new void StartCoroutine(IEnumerator coroutine)
-        {
-            base.StartCoroutine(coroutine);
-        }
+        private partial IGameEntity ResolveGameEntity();
 
         protected virtual void OnEnableGameEntity() {}
 
@@ -50,38 +37,6 @@ namespace Engine.Core.Implementation
         private void OnDisable()
         {
             OnDisableGameEntity();
-        }
-
-        private void OnCollisionEnter(Collision collision)
-        {
-            if (collision.gameObject != null)
-            {
-                OnCollisionEnterGameEntity(new GameEntity(collision.gameObject));
-            }
-        }
-
-        private void OnCollisionExit(Collision collision)
-        {
-            if (collision.gameObject != null)
-            {
-                OnCollisionExitGameEntity(new GameEntity(collision.gameObject));
-            }
-        }
-
-        private void OnTriggerEnter(Collider otherCollider)
-        {
-            if (otherCollider.gameObject != null)
-            {
-                OnTriggerEnterGameEntity(new GameEntity(otherCollider.gameObject));
-            }
-        }
-
-        private void OnTriggerExit(Collider otherCollider)
-        {
-            if (otherCollider.gameObject != null)
-            {
-                OnTriggerExitGameEntity(new GameEntity(otherCollider.gameObject));
-            }
         }
     }
 }
